@@ -23,9 +23,12 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' })
 })
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-)
+module.exports = app;
 
-module.exports = app
+// Start server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () =>
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  );
+}
