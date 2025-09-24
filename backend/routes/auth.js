@@ -5,7 +5,7 @@
  */
 
 const express = require('express');
-const { register, login } = require('../controllers/authController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ const router = express.Router();
  * @body    { username: String, email: String, password: String }
  * @returns { token: String, user: Object } - JWT token and user information
  */
-router.post('/register', register);
+router.post('/register', authController.register);
 
 /**
  * @route   POST /api/auth/login
@@ -25,6 +25,6 @@ router.post('/register', register);
  * @body    { email: String, password: String }
  * @returns { token: String, user: Object } - JWT token and user information
  */
-router.post('/login', login);
+router.post('/login', authController.login);
 
 module.exports = router;

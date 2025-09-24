@@ -4,6 +4,8 @@ const morgan = require('morgan')
 const cors = require('cors')
 const connectDB = require('./config/db')
 const authRoutes = require('./routes/auth')
+const sweetsRoutes = require('./routes/sweets')
+const cookieParser = require('cookie-parser')
 
 dotenv.config()
 connectDB()
@@ -11,12 +13,14 @@ connectDB()
 const app = express()
 
 // Middleware
+app.use(cookieParser())
 app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
 
 // Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/sweets', sweetsRoutes)
 
 // Error handler (optional, can extend)
 app.use((req, res) => {
