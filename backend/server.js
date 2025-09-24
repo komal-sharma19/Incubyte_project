@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 const morgan = require('morgan')
 const cors = require('cors')
 const connectDB = require('./config/db')
-// const authRoutes = require("./routes/authRoutes");
+const authRoutes = require('./routes/auth')
 
 dotenv.config()
 connectDB()
@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 // Routes
-// app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes)
 
 // Error handler (optional, can extend)
 app.use((req, res) => {
