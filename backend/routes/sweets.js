@@ -52,4 +52,11 @@ router.get('/search', auth, sweetController.searchSweets);
  */
 router.post('/:id/purchase', auth, sweetController.purchaseSweet);
 
+/**
+ * @route   POST /api/sweets/:id/restock
+ * @desc    Restock a sweet (increase quantity)
+ * @access  Admin only
+ */
+router.post('/:id/restock', auth, admin, sweetController.restockSweet);
+
 module.exports = router;

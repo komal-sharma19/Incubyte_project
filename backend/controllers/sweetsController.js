@@ -1,6 +1,16 @@
 const Sweet = require('../models/Sweet');
 
-// Create a sweet
+/**
+ * @function createSweet
+ * @description Creates a new sweet and saves it to the database.
+ *              Accessible only by admin users.
+ * @route POST /api/sweets
+ * @access Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Sweet details (name, category, price, quantity)
+ * @param {Object} res - Express response object
+ * @returns {Object} - Newly created sweet
+ */
 exports.createSweet = async (req, res) => {
   try {
     const sweet = new Sweet(req.body);
@@ -11,7 +21,16 @@ exports.createSweet = async (req, res) => {
   }
 };
 
-// Get all sweets
+/**
+ * @function getAllSweets
+ * @description Fetches all sweets from the database.
+ *              Accessible to any logged-in user.
+ * @route GET /api/sweets
+ * @access User/Admin
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of sweets
+ */
 exports.getAllSweets = async (req, res) => {
   try {
     const sweets = await Sweet.find();
@@ -21,7 +40,18 @@ exports.getAllSweets = async (req, res) => {
   }
 };
 
-// Update sweet
+/**
+ * @function updateSweet
+ * @description Updates an existing sweet by ID.
+ *              Accessible only by admin users.
+ * @route PUT /api/sweets/:id
+ * @access Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Contains sweet ID
+ * @param {Object} req.body - Sweet fields to update
+ * @param {Object} res - Express response object
+ * @returns {Object} - Updated sweet
+ */
 exports.updateSweet = async (req, res) => {
   try {
     const sweet = await Sweet.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -31,7 +61,17 @@ exports.updateSweet = async (req, res) => {
   }
 };
 
-// Delete sweet
+/**
+ * @function deleteSweet
+ * @description Deletes a sweet by ID.
+ *              Accessible only by admin users.
+ * @route DELETE /api/sweets/:id
+ * @access Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Contains sweet ID
+ * @param {Object} res - Express response object
+ * @returns {Object} - Confirmation message
+ */
 exports.deleteSweet = async (req, res) => {
   try {
     await Sweet.findByIdAndDelete(req.params.id);
@@ -41,7 +81,17 @@ exports.deleteSweet = async (req, res) => {
   }
 };
 
-// Search sweets
+/**
+ * @function searchSweets
+ * @description Searches sweets by filters like name, category, price range.
+ *              Accessible to any logged-in user.
+ * @route GET /api/sweets/search
+ * @access User/Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Search filters (name, category, minPrice, maxPrice)
+ * @param {Object} res - Express response object
+ * @returns {Array} - List of matching sweets
+ */
 exports.searchSweets = async (req, res) => {
   try {
     const { name, category, minPrice, maxPrice } = req.query;
@@ -63,7 +113,17 @@ exports.searchSweets = async (req, res) => {
   }
 };
 
-// Purchase a sweet (any logged-in user)
+/**
+ * @function purchaseSweet
+ * @description Handles purchase of a sweet. Decreases quantity by 1 if in stock.
+ *              Accessible to any logged-in user.
+ * @route POST /api/sweets/:id/purchase
+ * @access User/Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Contains sweet ID
+ * @param {Object} res - Express response object
+ * @returns {Object} - Confirmation message and updated sweet info
+ */
 exports.purchaseSweet = async (req, res) => {
   try {
     const sweet = await Sweet.findById(req.params.id);
@@ -83,6 +143,44 @@ exports.purchaseSweet = async (req, res) => {
         name: sweet.name,
         remainingQuantity: sweet.quantity
       }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * @function restockSweet
+ * @description Restocks a sweet by increasing its quantity.
+ *              Accessible only by admin users.
+ * @route POST /api/sweets/:id/restock
+ * @access Admin
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Contains sweet ID
+ * @param {Object} req.body - { quantity: Number }
+ * @param {Object} res - Express response object
+ * @returns {Object} - Confirmation message and updated sweet info
+ */
+exports.restockSweet = async (req, res) => {
+  try {
+    const { quantity } = req.body;
+    if (!quantity || quantity <= 0) {
+      return res.status(400).json({ error: 'Quantity must be greater than zero' });
+    }
+
+    const sweet = await Sweet.findById(req.params.id);
+    if (!sweet) {
+      return res.status(404).json({ error: 'Sweet not found' });
+    }
+
+    sweet.quantity += quantity;
+    await sweet.save();
+
+    res.json({
+      message: 'Sweet restocked successfully',
+      id: sweet._id,
+      name: sweet.name,
+      newQuantity: sweet.quantity,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
