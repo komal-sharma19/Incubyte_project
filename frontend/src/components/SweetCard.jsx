@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const SweetCard = ({ sweet }) => {
   const [stock, setStock] = useState(sweet.quantity); // Start with initial stock

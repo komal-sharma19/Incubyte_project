@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage' // Create this page
+import AdminSweetsPage from './pages/AdminSweetPage'
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
@@ -29,6 +30,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/sweet/:id'
+            element={
+              <ProtectedRoute>
+                <AdminSweetsPage />
               </ProtectedRoute>
             }
           />
