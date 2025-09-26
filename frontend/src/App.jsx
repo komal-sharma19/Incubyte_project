@@ -8,12 +8,14 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import HomePage from './pages/HomePage'
-import NotFoundPage from './pages/NotFoundPage' // Create this page
+import NotFoundPage from './pages/NotFoundPage'
 import AdminSweetsPage from './pages/AdminSweetPage'
+
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
-  console.log(user)
   if (!user) return <Navigate to='/login' replace />
   return children
 }
@@ -34,16 +36,18 @@ const App = () => {
             }
           />
           <Route
-            path='/sweet/:id'
+            path='/admin'
             element={
               <ProtectedRoute>
                 <AdminSweetsPage />
               </ProtectedRoute>
             }
           />
-          {/* Catch-all route for 404 */}
           <Route path='*' element={<NotFoundPage />} />
         </Routes>
+
+        {/* ToastContainer at root */}
+        <ToastContainer />
       </Router>
     </AuthProvider>
   )

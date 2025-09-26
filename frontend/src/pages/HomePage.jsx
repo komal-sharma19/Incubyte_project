@@ -1,26 +1,30 @@
 import { useState, useMemo, useEffect } from 'react'
 import SweetCard from '../components/SweetCard'
-import api from '../api/axios' // your axios instance
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import api from '../api/axios'
 import { IoIosSearch } from 'react-icons/io'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortOrder, setSortOrder] = useState('none') // 'none', 'asc', 'desc'
+  const [sortOrder, setSortOrder] = useState('none') 
   const [sweets, setSweets] = useState([])
 
   const categories = ['All', 'Bar', 'Lollipop', 'Gummy', 'Fudge', 'Candy Cane']
+
+  const navigate = useNavigate()
+
+  const { user } = useAuth()
 
   // --- Fetch sweets from backend ---
   useEffect(() => {
     const fetchSweets = async () => {
       try {
         const res = await api.get('/sweets')
+        console.log(res.data)
         setSweets(res.data)
       } catch (err) {
-        toast.error('Failed to fetch sweets')
       }
     }
     fetchSweets()
@@ -67,20 +71,43 @@ const HomePage = () => {
     return '💰'
   }
 
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout')
+
+      localStorage.removeItem('user')
+
+      navigate('/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
+
   return (
     <div className='min-h-screen bg-[#F0FFF0] font-sans'>
-      {/* Header */}
-      <header className='bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white p-8 text-center shadow-2xl rounded-b-3xl relative overflow-hidden'>
-        {/* Decorative circles */}
-        <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-pink-300 opacity-30 rounded-full blur-3xl'></div>
-        <div className='absolute bottom-0 right-10 w-56 h-56 bg-yellow-200 opacity-20 rounded-full blur-2xl'></div>
-
-        <h1 className='text-4xl sm:text-5xl font-extrabold tracking-wider relative z-10'>
-          The <span className='text-yellow-200 drop-shadow-lg'>Sweet Shop</span>
+      <header className='bg-[#FF69B4] text-white p-8 text-center shadow-2xl relative'>
+        <h1 className='text-4xl sm:text-5xl font-extrabold tracking-wider'>
+          AI Kata{' '}
+          <span className='text-[#A0522D] drop-shadow-md'>Sweet Shop</span>
         </h1>
-        <p className='mt-2 text-pink-100 text-lg sm:text-xl font-semibold relative z-10'>
-          🍬 Treat Yourself to Something Sweet! 🍭
-        </p>
+
+        {/* Admin Button */}
+        {user.role === 'admin' && (
+          <button
+            onClick={() => navigate('/admin')}
+            className='absolute top-1/3 right-28 bg-white text-pink-500 font-bold px-4 py-2 rounded-full shadow-lg hover:bg-pink-100'
+          >
+            Admin Panel
+          </button>
+        )}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout} // define this function
+          className='absolute top-1/3 right-4 bg-white text-pink-500 font-bold px-4 py-2 rounded-full shadow-lg hover:bg-pink-100'
+        >
+          Logout
+        </button>
       </header>
 
       <main className='p-4 md:p-12 max-w-7xl mx-auto'>
@@ -156,8 +183,6 @@ const HomePage = () => {
             ))}
           </div>
         )}
-
-        <ToastContainer position='top-right' autoClose={2500} hideProgressBar />
       </main>
     </div>
   )

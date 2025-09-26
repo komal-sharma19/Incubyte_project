@@ -27,4 +27,12 @@ router.post('/register', authController.register);
  */
 router.post('/login', authController.login);
 
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Logout a user and clear authentication cookies
+ * @access  Private
+ * @returns { message: String } - Confirmation of logout
+ */
+router.post('/logout', authController.logout);
+
 module.exports = router;

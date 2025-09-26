@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import api from '../api/axios'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 const AdminSweetsPage = () => {
   const [sweets, setSweets] = useState([])
@@ -24,7 +22,6 @@ const AdminSweetsPage = () => {
       const res = await api.get('/sweets')
       setSweets(res.data)
     } catch (err) {
-      //   toast.error("Failed to fetch sweets");
     }
   }
 
@@ -42,7 +39,6 @@ const AdminSweetsPage = () => {
   const handleAdd = async (e) => {
     e.preventDefault()
     if (!form.name || !form.category || !form.price || !form.quantity) {
-      //   toast.error("All fields are required!");
       return
     }
     try {
@@ -54,9 +50,7 @@ const AdminSweetsPage = () => {
       })
       setSweets([...sweets, res.data]) // append new sweet
       setForm({ id: null, name: '', category: '', price: '', quantity: '' })
-      //   toast.success("Sweet added successfully");
     } catch (err) {
-      //   toast.error("Failed to add sweet");
     }
   }
 
@@ -74,7 +68,6 @@ const AdminSweetsPage = () => {
   const handleUpdate = async (e) => {
     e.preventDefault()
     if (!form.name || !form.category || !form.price || !form.quantity) {
-      //   toast.error("All fields are required for update!");
       return
     }
 
@@ -94,9 +87,7 @@ const AdminSweetsPage = () => {
 
       setForm({ id: null, name: '', category: '', price: '', quantity: '' })
       setIsEditing(false)
-      //   toast.info("Sweet updated successfully");
     } catch (err) {
-      //   toast.error("Failed to update sweet");
     }
   }
 
@@ -106,9 +97,7 @@ const AdminSweetsPage = () => {
       try {
         await api.delete(`sweets/${id}`)
         setSweets(sweets.filter((s) => s._id !== id && s.id !== id))
-        // toast.error("Sweet deleted");
       } catch (err) {
-        // toast.error("Failed to delete sweet");
       }
     }
   }
@@ -256,8 +245,6 @@ const AdminSweetsPage = () => {
           </table>
         </div>
       </div>
-
-      {/* <ToastContainer position="top-right" autoClose={2500} hideProgressBar /> */}
     </div>
   )
 }

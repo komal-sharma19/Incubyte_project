@@ -13,11 +13,11 @@ const User = require('../models/User')
  * @description Handles user registration. Checks if email exists, hashes the password,
  *              creates a new user, and returns a JWT token in an HTTP-only cookie along with user info.
  * @param {Object} req - Express request object
- * @param {Object} req.body - Should contain username, email, password
+ * @param {Object} req.body - Should contain email, password
  * @param {Object} res - Express response object
  */
 exports.register = async (req, res) => {
-  const { username, email, password } = req.body
+  const { email, password } = req.body
 
   try {
     const existingUser = await User.findOne({ email })
@@ -26,7 +26,6 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = await User.create({
-      username,
       email,
       password: hashedPassword,
     })
@@ -48,7 +47,6 @@ exports.register = async (req, res) => {
       message: 'User registered successfully',
       user: {
         id: user._id,
-        username,
         email,
         role: user.role,
       },
@@ -92,7 +90,6 @@ exports.login = async (req, res) => {
       message: 'Login successful',
       user: {
         id: user._id,
-        username: user.username,
         email,
         role: user.role,
       },
@@ -101,3 +98,8 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message })
   }
 }
+
+exports.logout = (req, res) => {
+  res.clearCookie('token'); 
+  res.json({ message: 'Logged out successfully' });
+};
